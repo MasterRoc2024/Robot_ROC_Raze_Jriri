@@ -25,10 +25,9 @@ void InitIO()
     _TRISG7  = 0; // LED Bleue
     
     //****** Moteurs ************************
-
+    _TRISB14 = 0;       //Entrée1 du M1 
+    _TRISB15 = 0;       //Entrée2 du M1
     // Configuration des entrées
-    
-
     // Configuration des pins remappables    
     //*************************************************************
     // Unlock Registers
