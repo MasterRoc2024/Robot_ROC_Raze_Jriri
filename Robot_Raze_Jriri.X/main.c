@@ -33,15 +33,15 @@ int main(void) {
     LED_BLEUE = 1;
     LED_ORANGE = 1;
     
-    PWMSetSpeed(20);
+    PWMSetSpeed(20, 20);
 
     /****************************************************************************************************/
     // Boucle Principale
     /****************************************************************************************************/
     while (1) {
-//        LED_BLANCHE = !LED_BLANCHE;
-//        LED_BLEUE = !LED_BLEUE;
-//        LED_ORANGE = !LED_ORANGE;
+        //LED_BLANCHE = !LED_BLANCHE;
+        //LED_BLEUE = !LED_BLEUE;
+        //LED_ORANGE = !LED_ORANGE;
     } // fin main
 }
 

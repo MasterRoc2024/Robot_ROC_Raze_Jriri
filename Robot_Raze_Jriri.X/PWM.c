@@ -23,20 +23,32 @@ FCLCON6 = 0x0003; //éDsactive la gestion des faults
 PTCONbits.PTEN = 1;
 }
 
-void PWMSetSpeed(float vitesseEnPourcents)
+void PWMSetSpeed(float vitesseMGPourcents, float vitesseMDPourcents)
 {   
-    if (vitesseEnPourcents >0.0) {
-        robotState.vitesseGaucheCommandeCourante = vitesseEnPourcents;
+    robotState.vitesseGaucheCommandeCourante = vitesseMGPourcents;
+    robotState.vitesseDroiteCommandeCourante = vitesseMDPourcents;
+    if (vitesseMGPourcents >0.0) {
         MOTEUR_GAUCHE_L_PWM_ENABLE = 0; //Pilotage de la pin en mode IO
         MOTEUR_GAUCHE_L_IO_OUTPUT = 1; //Mise à1 de la pin
         MOTEUR_GAUCHE_H_PWM_ENABLE = 1; //Pilotage de la pin en mode PWM
         MOTEUR_GAUCHE_DUTY_CYCLE = Abs(robotState.vitesseGaucheCommandeCourante*PWMPER);
     } 
-    else if (vitesseEnPourcents <0.0) {
-        robotState.vitesseGaucheCommandeCourante = vitesseEnPourcents;
+    else if (vitesseMGPourcents <0.0) {
         MOTEUR_GAUCHE_L_PWM_ENABLE = 1; //Pilotage de la pin en mode IO
         MOTEUR_GAUCHE_H_PWM_ENABLE = 0; //Pilotage de la pin en mode PWM
         MOTEUR_GAUCHE_H_IO_OUTPUT = 1; //Mise à1 de la pin
         MOTEUR_GAUCHE_DUTY_CYCLE = Abs(robotState.vitesseGaucheCommandeCourante*PWMPER);
+    }
+    if (vitesseMDPourcents >0.0) {
+        MOTEUR_DROIT_L_PWM_ENABLE = 0; //Pilotage de la pin en mode IO
+        MOTEUR_DROIT_L_IO_OUTPUT = 1; //Mise à1 de la pin
+        MOTEUR_DROIT_H_PWM_ENABLE = 1; //Pilotage de la pin en mode PWM
+        MOTEUR_DROIT_DUTY_CYCLE = Abs(robotState.vitesseDroiteCommandeCourante*PWMPER);
+    } 
+    else if (vitesseMDPourcents <0.0) {
+        MOTEUR_DROIT_L_PWM_ENABLE = 1; //Pilotage de la pin en mode IO
+        MOTEUR_DROIT_H_PWM_ENABLE = 0; //Pilotage de la pin en mode PWM
+        MOTEUR_DROIT_H_IO_OUTPUT = 1; //Mise à1 de la pin
+        MOTEUR_DROIT_DUTY_CYCLE = Abs(robotState.vitesseDroiteCommandeCourante*PWMPER);
     }
 }

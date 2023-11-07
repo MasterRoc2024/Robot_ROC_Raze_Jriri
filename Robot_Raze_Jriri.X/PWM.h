@@ -10,7 +10,7 @@
 #define PWMPER 40.0
 
 void InitPWM(void);
-void PWMSetSpeed(float vitesseEnPourcents);
+void PWMSetSpeed(float vitesseMGPourcents, float vitesseMDPourcents);
 
 
 #endif	/* PWM_H */

@@ -7,6 +7,7 @@
 
 #ifndef TIMER_H
 #define	TIMER_H
+#define CPUCLOCK 40000000
 
 void InitTimer23(void);
 void InitTimer1(void);

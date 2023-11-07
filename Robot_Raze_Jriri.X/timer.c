@@ -8,9 +8,10 @@
 #include <xc.h>
 #include "timer.h"
 #include "IO.h"
+#include "PWM.h"
 
 //Initialisation d?un timer 32 bits
-
+unsigned char toggle= 0;
 void InitTimer23(void) {
     T3CONbits.TON = 0; // Stop any 16-bit Timer3 operation
     T2CONbits.TON = 0; // Stop any 16/32-bit Timer2 operation
@@ -19,8 +20,11 @@ void InitTimer23(void) {
     T2CONbits.TCKPS = 0b00; // Select 1:1 Prescaler
     TMR3 = 0x00; // Clear 32-bit Timer (msw)
     TMR2 = 0x00; // Clear 32-bit Timer (lsw)
-    PR3 = 0x04C4; // Load 32-bit period value (msw)
-    PR2 = 0xB400; // Load 32-bit period value (lsw)
+    //PR3 = 0x04C4; // Load 32-bit period value (msw)
+    PR3= 0x0262;
+    //PR2 = 0xB400; // Load 32-bit period value (lsw)
+    PR2= 0x5A00;
+    //PR2= (unsigned long)CPUCLOCK;
     IPC2bits.T3IP = 0x01; // Set Timer3 Interrupt Priority Level
     IFS0bits.T3IF = 0; // Clear Timer3 Interrupt Flag
     IEC0bits.T3IE = 1; // Enable Timer3 interrupt
@@ -32,7 +36,15 @@ void InitTimer23(void) {
 
 void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void) {
     IFS0bits.T3IF = 0; // Clear Timer3 Interrupt Flag
-    LED_ORANGE = !LED_ORANGE;
+    //LED_ORANGE = !LED_ORANGE;
+    if(toggle == 0) {
+        PWMSetSpeed(20, 20);
+        toggle = 1;
+    }
+    else {
+        PWMSetSpeed(-20, -20);
+        toggle = 0;
+    }
 }
 
 //Initialisation d?un timer 16 bits
