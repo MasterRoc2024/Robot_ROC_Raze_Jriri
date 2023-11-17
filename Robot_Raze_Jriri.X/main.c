@@ -12,6 +12,7 @@
 #include "IO.h"
 #include "timer.h"
 #include "PWM.h"
+#include "ADC.h"
 
 int main(void) {
     /***************************************************************************************************/
@@ -28,12 +29,14 @@ int main(void) {
     InitTimer1();
     InitTimer23();
     InitPWM();
+    InitADC1();
     
     LED_BLANCHE = 1;
     LED_BLEUE = 1;
     LED_ORANGE = 1;
     
-    PWMSetSpeed(20, 20);
+    //PWMSetSpeed(20.0, 20.0);
+    PWMSetSpeedConsigne(20, 20);
 
     /****************************************************************************************************/
     // Boucle Principale

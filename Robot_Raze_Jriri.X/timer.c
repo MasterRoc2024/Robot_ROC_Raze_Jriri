@@ -9,9 +9,12 @@
 #include "timer.h"
 #include "IO.h"
 #include "PWM.h"
+#include "ADC.h"
 
 //Initialisation d?un timer 32 bits
-unsigned char toggle= 0;
+unsigned char toggle = 0;
+unsigned char cpt_it = 0;
+
 void InitTimer23(void) {
     T3CONbits.TON = 0; // Stop any 16-bit Timer3 operation
     T2CONbits.TON = 0; // Stop any 16/32-bit Timer2 operation
@@ -21,9 +24,9 @@ void InitTimer23(void) {
     TMR3 = 0x00; // Clear 32-bit Timer (msw)
     TMR2 = 0x00; // Clear 32-bit Timer (lsw)
     //PR3 = 0x04C4; // Load 32-bit period value (msw)
-    PR3= 0x0262;
+    PR3 = 0x0262;
     //PR2 = 0xB400; // Load 32-bit period value (lsw)
-    PR2= 0x5A00;
+    PR2 = 0x5A00;
     //PR2= (unsigned long)CPUCLOCK;
     IPC2bits.T3IP = 0x01; // Set Timer3 Interrupt Priority Level
     IFS0bits.T3IF = 0; // Clear Timer3 Interrupt Flag
@@ -36,13 +39,13 @@ void InitTimer23(void) {
 
 void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void) {
     IFS0bits.T3IF = 0; // Clear Timer3 Interrupt Flag
-    //LED_ORANGE = !LED_ORANGE;
+    LED_ORANGE = !LED_ORANGE;
     if(toggle == 0) {
-        PWMSetSpeed(20, 20);
+        PWMSetSpeedConsigne(20, 20);
         toggle = 1;
     }
     else {
-        PWMSetSpeed(-20, -20);
+        PWMSetSpeedConsigne(-20, -20);
         toggle = 0;
     }
 }
@@ -52,13 +55,13 @@ void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void) {
 void InitTimer1(void) {
     //Timer1 pour horodater les mesures (1ms)
     T1CONbits.TON = 0; // Disable Timer
-    T1CONbits.TCKPS = 0b01; //Prescaler
+    T1CONbits.TCKPS = 0b10; //Prescaler
     //11 = 1:256 prescale value
     //10 = 1:64 prescale value
     //01 = 1:8 prescale value
     //00 = 1:1 prescale value
     T1CONbits.TCS = 0; //clock source = internal clock
-    PR1 = (int)(40000000 / (8 * 6000));
+    PR1 = (int) (40000000 / 64 / 100);
 
     IFS0bits.T1IF = 0; // Clear Timer Interrupt Flag
     IEC0bits.T1IE = 1; // Enable Timer interrupt
@@ -69,5 +72,13 @@ void InitTimer1(void) {
 
 void __attribute__((interrupt, no_auto_psv)) _T1Interrupt(void) {
     IFS0bits.T1IF = 0;
-    LED_BLANCHE = !LED_BLANCHE;
+    //LED_BLANCHE = !LED_BLANCHE;
+    /*cpt_it+=1;
+    if (cpt_it > 5) {
+        PWMSetSpeedConsigne(20, 20);
+    }*/
+    PWMUpdateSpeed();
+    //ADC1StartConversionSequence();
+
+
 }
