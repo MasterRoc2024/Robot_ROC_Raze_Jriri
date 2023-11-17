@@ -27,8 +27,8 @@ void InitIO()
     //****** Moteurs ************************
     _TRISB14 = 0;       //Entrée1 du M1 
     _TRISB15 = 0;       //Entrée2 du M1
-    _TRISC6 = 0;       //Entrée1 du M2
-    _TRISC7 = 0;       //Entrée2 du M2
+    //_TRISC6 = 0;       //Entrée1 du M2
+    //_TRISC7 = 0;       //Entrée2 du M2
     // Configuration des entrées
     // Configuration des pins remappables    
     //*************************************************************

@@ -25,6 +25,7 @@ void InitPWM(void) {
     PTCONbits.PTEN = 1;
     robotState.vitesseGaucheCommandeCourante = 0;
     robotState.vitesseDroiteCommandeCourante = 0;
+    
 }
 
 void PWMSetSpeed(float vitesseMGPourcents, float vitesseMDPourcents) {

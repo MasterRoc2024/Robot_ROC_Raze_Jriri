@@ -2,7 +2,7 @@
 #include "adc.h"
 unsigned char ADCResultIndex = 0;
 static unsigned int ADCResult[4];
-unsigned char ADCConversionFinishedFlag;
+unsigned char ADCConversionFinishedFlag= 0;
 /****************************************************************************************************/
 // Configuration ADC
 /****************************************************************************************************/
@@ -39,7 +39,7 @@ void InitADC1(void) {
     /************************************************************/
     //Configuration des ports
     /************************************************************/
-    //ADC éutiliss : 16(G9)-11(C11)-6(C0)
+    //ADC éutiliss : 16(G9)-11(C11)-6(C0) pins d'entrée
     ANSELCbits.ANSC0 = 1;
     ANSELCbits.ANSC11 = 1;
     ANSELGbits.ANSG9 = 1;
@@ -55,21 +55,27 @@ void InitADC1(void) {
 }
 /* This is ADC interrupt routine */
 void __attribute__((interrupt, no_auto_psv)) _AD1Interrupt(void) {
+    //Récupérer Les résultats de l'acquisition
+    //valeur max 1280, utilisation des points deviseurs pour diminuer la tension d'entrée (10V=4096 à 3.3V~1280)
     IFS0bits.AD1IF = 0;
     ADCResult[0] = ADC1BUF0;// Read the AN-scan input 1 conversion result
     ADCResult[1] = ADC1BUF1;// Read the AN3 conversion result
     ADCResult[2] = ADC1BUF2;// Read the AN5 conversion result
     ADCConversionFinishedFlag = 1;
 }
+//Fonction pour lancere une Acquisition
 void ADC1StartConversionSequence() {
     AD1CON1bits.SAMP = 1 ; //Lance une acquisition ADC
 }
+//Fonction pour retourner les dernier résultats d'acquisition
 unsigned int * ADCGetResult(void) {
     return ADCResult;
 }
+//Flag à 0 pour détecter la fin de l'aquisition suivante
 unsigned char ADCIsConversionFinished(void) {
     return ADCConversionFinishedFlag;
 }
+//Fonction pour clean le flag pour pouvoir effectuer une nouvelle acquisition
 void ADCClearConversionFinishedFlag(void) {
     ADCConversionFinishedFlag = 0;
 }

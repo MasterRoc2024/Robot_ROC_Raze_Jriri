@@ -13,7 +13,6 @@
 
 //Initialisation d?un timer 32 bits
 unsigned char toggle = 0;
-unsigned char cpt_it = 0;
 
 void InitTimer23(void) {
     T3CONbits.TON = 0; // Stop any 16-bit Timer3 operation
@@ -39,15 +38,7 @@ void InitTimer23(void) {
 
 void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void) {
     IFS0bits.T3IF = 0; // Clear Timer3 Interrupt Flag
-    LED_ORANGE = !LED_ORANGE;
-    if(toggle == 0) {
-        PWMSetSpeedConsigne(20, 20);
-        toggle = 1;
-    }
-    else {
-        PWMSetSpeedConsigne(-20, -20);
-        toggle = 0;
-    }
+    //LED_ORANGE = !LED_ORANGE;
 }
 
 //Initialisation d?un timer 16 bits
@@ -73,12 +64,9 @@ void InitTimer1(void) {
 void __attribute__((interrupt, no_auto_psv)) _T1Interrupt(void) {
     IFS0bits.T1IF = 0;
     //LED_BLANCHE = !LED_BLANCHE;
-    /*cpt_it+=1;
-    if (cpt_it > 5) {
-        PWMSetSpeedConsigne(20, 20);
-    }*/
-    PWMUpdateSpeed();
-    //ADC1StartConversionSequence();
+    
+    //PWMUpdateSpeed();
+    ADC1StartConversionSequence();
 
 
 }
