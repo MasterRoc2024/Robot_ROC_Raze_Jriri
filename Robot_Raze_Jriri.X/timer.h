@@ -11,17 +11,11 @@
 
 void InitTimer23(void);
 void InitTimer1(void);
-/*
-#ifdef	__cplusplus
-extern "C" {
-#endif
+void InitTimer4(void);
+void SetFreqTimer1(float freq);
+void SetFreqTimer4(float freq);
 
+extern unsigned long timestamp;
 
-
-
-#ifdef	__cplusplus
-}
-#endif
-*/
 #endif	/* TIMER_H */
 
