@@ -1,0 +1,34 @@
+﻿<Window x:Class="JririRazeInterface.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:JririRazeInterface"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition  Width="30"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition  Height="30"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox x:Name="Emission" Header="Emission" Grid.Row="1" Grid.Column="1" Background="#FFDDDDDD  " BorderBrush="#FF000000" >
+            <TextBox x:Name="textBoxEmission" Width="Auto" Height="Auto" Margin="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" BorderBrush="Transparent" KeyUp="TextBoxEmission_KeyUp"/>
+        </GroupBox>
+        <Button x:Name="buttonEnvoyer" Grid.Row ="3" Grid.Column="1" Width="100" VerticalAlignment="Center" Content="Envoyer"/>
+        <GroupBox x:Name="reception" Header="reception" Grid.Row="1" Grid.Column="3" Background="#FFDDDDDD  " BorderBrush="#FF000000">
+            <TextBox x:Name="textBoxReception" IsReadOnly="True" Width="Auto" Height="Auto" Margin="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" BorderBrush="Transparent"/>
+        </GroupBox>
+
+    </Grid>
+</Window>

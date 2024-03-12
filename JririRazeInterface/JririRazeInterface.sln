@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JririRazeInterface", "JririRazeInterface.csproj", "{9EDE7CF1-DD68-4B91-AC3A-B4C93DCB4634}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtendedSerialPort", "..\ExtendedSerialPort .NET6\ExtendedSerialPort\ExtendedSerialPort\ExtendedSerialPort.csproj", "{2127979F-4E92-4177-A40D-4D1A3D87E9C6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9EDE7CF1-DD68-4B91-AC3A-B4C93DCB4634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EDE7CF1-DD68-4B91-AC3A-B4C93DCB4634}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EDE7CF1-DD68-4B91-AC3A-B4C93DCB4634}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EDE7CF1-DD68-4B91-AC3A-B4C93DCB4634}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2127979F-4E92-4177-A40D-4D1A3D87E9C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2127979F-4E92-4177-A40D-4D1A3D87E9C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2127979F-4E92-4177-A40D-4D1A3D87E9C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2127979F-4E92-4177-A40D-4D1A3D87E9C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {747A4122-54B4-48B8-816E-4B070A1670CB}
+	EndGlobalSection
+EndGlobal
