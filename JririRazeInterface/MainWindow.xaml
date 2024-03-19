@@ -8,27 +8,27 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="30"/>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="30"/>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition  Width="30"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
-            <RowDefinition  Height="30"/>
+            <RowDefinition Height="50"/>
+            
         </Grid.RowDefinitions>
 
-        <GroupBox x:Name="Emission" Header="Emission" Grid.Row="1" Grid.Column="1" Background="#FFDDDDDD  " BorderBrush="#FF000000" >
+        <GroupBox x:Name="Emission" Header="Emission" Grid.Row="0" Grid.Column="0" Background="#FFDDDDDD  " Margin="5" BorderBrush="#FF000000" >
             <TextBox x:Name="textBoxEmission" Width="Auto" Height="Auto" Margin="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" BorderBrush="Transparent" KeyUp="TextBoxEmission_KeyUp"/>
         </GroupBox>
-        <Button x:Name="buttonEnvoyer" Grid.Row ="3" Grid.Column="1" Width="100" VerticalAlignment="Center" Content="Envoyer"/>
-        <GroupBox x:Name="reception" Header="reception" Grid.Row="1" Grid.Column="3" Background="#FFDDDDDD  " BorderBrush="#FF000000">
+        
+        <GroupBox x:Name="reception" Header="reception" Grid.Row="0" Grid.Column="1" Background="#FFDDDDDD" Margin="5" BorderBrush="#FF000000">
             <TextBox x:Name="textBoxReception" IsReadOnly="True" Width="Auto" Height="Auto" Margin="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" BorderBrush="Transparent"/>
         </GroupBox>
-
+        <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
+            <Button x:Name="buttonEnvoyer" Width="100" Margin="10" Content="Envoyer"/>
+            <Button x:Name="buttonClear" Width="100" Margin="10" Content="Clear Console"/>
+        </StackPanel>
+       
+        
     </Grid>
 </Window>

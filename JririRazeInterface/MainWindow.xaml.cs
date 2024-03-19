@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ExtendedSerialPort_NS;
 using System.IO.Ports;
+using System.Windows.Threading;
+using System.Runtime.ConstrainedExecution;
 
 namespace JririRazeInterface
 {
@@ -24,19 +26,47 @@ namespace JririRazeInterface
     {
         Brush initBrush;
         ExtendedSerialPort serialPort1;
+        DispatcherTimer timerAffichage;
+        Robot robot;
+        byte[] byteList; 
+
         public MainWindow()
         {
             InitializeComponent();
             initBrush = buttonEnvoyer.Background;
             buttonEnvoyer.Click += ButtonEnvoyer_Click;
-            serialPort1.DataReceived += SerialPort1_DataReceived;
             serialPort1 = new ExtendedSerialPort("COM7", 115200, Parity.None, 8, StopBits.One);
+            serialPort1.DataReceived += SerialPort1_DataReceived;
+            buttonClear.Click += ButtonClear_Click;
             serialPort1.Open();
+            timerAffichage = new DispatcherTimer();
+            timerAffichage.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            timerAffichage.Tick += TimerAffichage_Tick;
+            timerAffichage.Start();
+            robot = new Robot();
+            byteList = new byte[20];
+        }
+
+        private void ButtonClear_Click(object sender, RoutedEventArgs e)
+        {
+            textBoxReception.Text = "";
+        }
+
+        private void TimerAffichage_Tick(object? sender, EventArgs e)
+        {
+            if (robot.receivedText != "")
+            {
+                textBoxReception.Text += robot.receivedText;
+                textBoxEmission.Text = "";
+                robot.receivedText = "";
+            }
+
         }
 
         private void SerialPort1_DataReceived(object? sender, DataReceivedArgs e)
         {
-            textBoxReception.Text += Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
+            robot.receivedText += Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
+            
         }
 
         //Fonction d'Evenements (Interruptions)
@@ -46,15 +76,30 @@ namespace JririRazeInterface
                 buttonEnvoyer.Background = Brushes.RoyalBlue;
             else 
                 buttonEnvoyer.Background = initBrush;*/
-            SendMessage();
-        
+            //SendMessage();
+            if (textBoxEmission.Text == "")
+            {
+                for (int i = 0; i < byteList.Length; i++)
+                {
+                    byteList[i] = (byte)(2*i);
+                }
+                serialPort1.Write(byteList, 0, byteList.Length);
+            }
+            else
+            {
+                if (serialPort1.IsOpen == true)
+                    serialPort1.WriteLine(textBoxEmission.Text);
+                else
+                    throw new Exception("Envoi de data sur un port ferme");
+            }
+                
         }
 
         private void TextBoxEmission_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                SendMessage();
+                //SendMessage();
             }
         }
 
