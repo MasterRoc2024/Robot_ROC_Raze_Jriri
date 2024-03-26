@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <xc.h>
+#include <libpic30.h>
 #include "ChipConfig.h"
 #include "IO.h"
 #include "timer.h"
@@ -15,6 +16,7 @@
 #include "ADC.h"
 #include "Robot.h"
 #include "main.h"
+#include "UART.h"
 
 /*#define STATE_ATTENTE 0
 #define STATE_ATTENTE_EN_COURS 1
@@ -63,16 +65,19 @@ int main(void) {
     InitTimer4();
     InitPWM();
     InitADC1();
+    InitUART();
     PWMSetSpeed(10, MOTEUR_DROIT);
     PWMSetSpeed(10, MOTEUR_GAUCHE);
     LED_BLANCHE = 1;
     LED_BLEUE = 1;
     LED_ORANGE = 1;
-
     /****************************************************************************************************/
     // Boucle Principale
     /****************************************************************************************************/
     while (1) {
+        SendMessageDirect((unsigned char*) "Bonjour", 7);
+        __delay32(4000000);
+
         //LED_BLANCHE = !LED_BLANCHE;
         //LED_BLEUE = !LED_BLEUE;
         //LED_ORANGE = !LED_ORANGE;

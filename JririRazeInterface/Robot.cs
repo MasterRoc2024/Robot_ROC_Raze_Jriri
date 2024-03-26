@@ -12,8 +12,14 @@ namespace JririRazeInterface
         public float distanceTelemetreDroit;
         public float distanceTelemetreCentre;
         public float distanceTelemetreGauche;
+        public Queue<byte> ByteListReceived;
+
+        //Constructeur
         public Robot()
         {
+            ByteListReceived = new Queue<byte>();
         }
+
+
     }
 }

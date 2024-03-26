@@ -22,7 +22,7 @@
         </GroupBox>
         
         <GroupBox x:Name="reception" Header="reception" Grid.Row="0" Grid.Column="1" Background="#FFDDDDDD" Margin="5" BorderBrush="#FF000000">
-            <TextBox x:Name="textBoxReception" IsReadOnly="True" Width="Auto" Height="Auto" Margin="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" BorderBrush="Transparent"/>
+            <TextBox x:Name="textBoxReception" IsReadOnly="True" Width="Auto" Height="Auto" Margin="0" VerticalAlignment="Stretch" TextWrapping="Wrap" HorizontalAlignment="Stretch" Background="Transparent" BorderBrush="Transparent"/>
         </GroupBox>
         <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
             <Button x:Name="buttonEnvoyer" Width="100" Margin="10" Content="Envoyer"/>

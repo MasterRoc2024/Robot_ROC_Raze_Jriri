@@ -16,6 +16,7 @@ using ExtendedSerialPort_NS;
 using System.IO.Ports;
 using System.Windows.Threading;
 using System.Runtime.ConstrainedExecution;
+using System.Collections;
 
 namespace JririRazeInterface
 {
@@ -27,7 +28,7 @@ namespace JririRazeInterface
         Brush initBrush;
         ExtendedSerialPort serialPort1;
         DispatcherTimer timerAffichage;
-        Robot robot;
+        public Robot robot;
         byte[] byteList; 
 
         public MainWindow()
@@ -54,19 +55,21 @@ namespace JririRazeInterface
 
         private void TimerAffichage_Tick(object? sender, EventArgs e)
         {
-            if (robot.receivedText != "")
+            while(robot.ByteListReceived.Count > 0)
             {
-                textBoxReception.Text += robot.receivedText;
-                textBoxEmission.Text = "";
-                robot.receivedText = "";
+                var c = robot.ByteListReceived.Dequeue();
+                textBoxReception.Text += "0x" + c.ToString("X2") + " ";
             }
 
         }
 
         private void SerialPort1_DataReceived(object? sender, DataReceivedArgs e)
         {
-            robot.receivedText += Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
-            
+            //robot.receivedText += Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
+            foreach (var value in e.Data)
+            {
+                robot.ByteListReceived.Enqueue(value);
+            }
         }
 
         //Fonction d'Evenements (Interruptions)

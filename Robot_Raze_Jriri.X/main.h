@@ -13,5 +13,6 @@
 void SetNextRobotStateInAutomaticMode();
 void OperatingSystemLoop(void);
 
+
 #endif	/* MAIN_H */
 
