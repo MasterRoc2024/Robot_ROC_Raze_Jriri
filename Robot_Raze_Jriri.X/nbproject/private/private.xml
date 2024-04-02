@@ -5,8 +5,11 @@
         <group>
             <file>file:/C:/Github/Robot_ROC_Raze_Jriri/Robot_Raze_Jriri.X/main.h</file>
             <file>file:/C:/Github/Robot_ROC_Raze_Jriri/Robot_Raze_Jriri.X/UART.c</file>
+            <file>file:/C:/Github/Robot_ROC_Raze_Jriri/Robot_Raze_Jriri.X/IO.c</file>
             <file>file:/C:/Github/Robot_ROC_Raze_Jriri/Robot_Raze_Jriri.X/main.c</file>
+            <file>file:/C:/Github/Robot_ROC_Raze_Jriri/Robot_Raze_Jriri.X/timer.c</file>
             <file>file:/C:/Github/Robot_ROC_Raze_Jriri/Robot_Raze_Jriri.X/ADC.c</file>
+            <file>file:/C:/Github/Robot_ROC_Raze_Jriri/Robot_Raze_Jriri.X/IO.h</file>
             <file>file:/C:/Github/Robot_ROC_Raze_Jriri/Robot_Raze_Jriri.X/UART.h</file>
         </group>
     </open-files>

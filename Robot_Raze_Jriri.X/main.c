@@ -17,7 +17,8 @@
 #include "Robot.h"
 #include "main.h"
 #include "UART.h"
-
+#include "CB_TX1.h"
+#include "CB_RX1.h"
 /*#define STATE_ATTENTE 0
 #define STATE_ATTENTE_EN_COURS 1
 #define STATE_AVANCE 2
@@ -44,22 +45,20 @@
 #define MOTEUR_DROIT 1
 
 unsigned char stateRobot;
-unsigned char nextStateRobot=0;
-
-
+unsigned char nextStateRobot = 0;
 
 int main(void) {
     /***************************************************************************************************/
     //Initialisation de l?oscillateur
     /****************************************************************************************************/
-    
+
     InitOscillator();
 
     /****************************************************************************************************/
     // Configuration des entrées sorties
     /****************************************************************************************************/
     InitIO();
-    
+
     InitTimer1();
     InitTimer23();
     InitTimer4();
@@ -75,13 +74,21 @@ int main(void) {
     // Boucle Principale
     /****************************************************************************************************/
     while (1) {
-        SendMessageDirect((unsigned char*) "Bonjour", 7);
-        __delay32(4000000);
+        /*SendMessage((unsigned char*) "Bonjour", 7);
+        __delay32(4000000);*/
+        int i;
+        for (i = 0; i < CB_RX1_GetDataSize(); i++) {
+            unsigned char c = CB_RX1_Get();
+            SendMessage(&c, 1);
+        }
+        __delay32(1000);
+        //SendMessageDirect((unsigned char*) "Bonjour", 7);
+        //__delay32(4000000);
 
         //LED_BLANCHE = !LED_BLANCHE;
         //LED_BLEUE = !LED_BLEUE;
         //LED_ORANGE = !LED_ORANGE;
-        
+
         /*if (ADCIsConversionFinished() == 1) {           //Si une nouvelle aquisition terminée || Récupération des résultats
             unsigned int * result=  ADCGetResult();
             unsigned int ADCValue0= result[0];
@@ -98,7 +105,7 @@ int main(void) {
             
         }*/
     } // fin main
-      
+
 }
 
 

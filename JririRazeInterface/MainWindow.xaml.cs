@@ -17,6 +17,7 @@ using System.IO.Ports;
 using System.Windows.Threading;
 using System.Runtime.ConstrainedExecution;
 using System.Collections;
+using System.Security.Cryptography;
 
 namespace JririRazeInterface
 {
@@ -57,8 +58,9 @@ namespace JririRazeInterface
         {
             while(robot.ByteListReceived.Count > 0)
             {
-                var c = robot.ByteListReceived.Dequeue();
-                textBoxReception.Text += "0x" + c.ToString("X2") + " ";
+                var c = new byte[1] { robot.ByteListReceived.Dequeue() };
+                textBoxReception.Text += Encoding.UTF8.GetString(c, 0, 1);
+                //textBoxReception.Text += "0x" + c.ToString("X2") + " ";
             }
 
         }
@@ -70,6 +72,7 @@ namespace JririRazeInterface
             {
                 robot.ByteListReceived.Enqueue(value);
             }
+            var t = 1;
         }
 
         //Fonction d'Evenements (Interruptions)
@@ -80,21 +83,21 @@ namespace JririRazeInterface
             else 
                 buttonEnvoyer.Background = initBrush;*/
             //SendMessage();
-            if (textBoxEmission.Text == "")
-            {
+            //if (textBoxEmission.Text == "")
+            //{
                 for (int i = 0; i < byteList.Length; i++)
                 {
                     byteList[i] = (byte)(2*i);
                 }
                 serialPort1.Write(byteList, 0, byteList.Length);
-            }
-            else
-            {
-                if (serialPort1.IsOpen == true)
-                    serialPort1.WriteLine(textBoxEmission.Text);
-                else
-                    throw new Exception("Envoi de data sur un port ferme");
-            }
+            //}
+            //else
+            //{
+            //    if (serialPort1.IsOpen == true)
+            //        serialPort1.WriteLine(textBoxEmission.Text);
+            //    else
+            //        throw new Exception("Envoi de data sur un port ferme");
+            //}
                 
         }
 
