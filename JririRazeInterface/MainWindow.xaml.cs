@@ -18,6 +18,8 @@ using System.Windows.Threading;
 using System.Runtime.ConstrainedExecution;
 using System.Collections;
 using System.Security.Cryptography;
+using System.Drawing;
+using System.Collections.Specialized;
 
 namespace JririRazeInterface
 {
@@ -85,20 +87,19 @@ namespace JririRazeInterface
             //SendMessage();
             //if (textBoxEmission.Text == "")
             //{
-                for (int i = 0; i < byteList.Length; i++)
-                {
-                    byteList[i] = (byte)(2*i);
-                }
-                serialPort1.Write(byteList, 0, byteList.Length);
+            /*for (int i = 0; i < byteList.Length; i++)
+            {
+                byteList[i] = (byte)(2*i);
+            }
+            serialPort1.Write(byteList, 0, byteList.Length);*/
             //}
-            //else
-            //{
-            //    if (serialPort1.IsOpen == true)
-            //        serialPort1.WriteLine(textBoxEmission.Text);
-            //    else
-            //        throw new Exception("Envoi de data sur un port ferme");
-            //}
-                
+            if (serialPort1.IsOpen == true)
+                //serialPort1.WriteLine(textBoxEmission.Text);
+
+                UartEncodeAndSendMessage(128, textBoxEmission.Text.Length, Encoding.ASCII.GetBytes(textBoxEmission.Text));
+            else
+                throw new Exception("Envoi de data sur un port ferme");
+
         }
 
         private void TextBoxEmission_KeyUp(object sender, KeyEventArgs e)
@@ -114,5 +115,34 @@ namespace JririRazeInterface
             textBoxReception.Text += textBoxEmission.Text;
             textBoxEmission.Text = "";
         }
+        byte CalculateChecksum(int msgFunction,
+            int msgPayloadLength, byte[] msgPayload)
+        {
+            byte checksum = 0;
+            checksum ^= 0xFE;
+            checksum ^= (byte)(msgFunction >> 8);
+            checksum ^= (byte)(msgFunction >> 0);
+            checksum ^= (byte)(msgPayloadLength >> 8);
+            checksum ^= (byte)(msgPayloadLength >> 0);
+            for (int i = 0;i< msgPayloadLength; i++)
+            {
+                checksum ^= msgPayload[i];
+            }
+
+            return checksum;
+        }
+
+        void UartEncodeAndSendMessage(int msgFunction,
+            int msgPayloadLength, byte[] msgPayload)
+        {
+            var checksum = CalculateChecksum(msgFunction,
+             msgPayloadLength, msgPayload);
+            int startOfFrame = 0xFE;
+            var debutTrame = new byte[5];
+            //var trame = new byte[];
+            //serialPort1.Write(byteList, 0, byteList.Length);
+            //serialPort1.Write()
+        }
     }
+
 }
