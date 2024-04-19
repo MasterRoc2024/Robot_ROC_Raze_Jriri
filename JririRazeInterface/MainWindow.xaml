@@ -14,9 +14,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="50"/>
-            
+            <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
-
         <GroupBox x:Name="Emission" Header="Emission" Grid.Row="0" Grid.Column="0" Background="#FFDDDDDD  " Margin="5" BorderBrush="#FF000000" >
             <TextBox x:Name="textBoxEmission" Width="Auto" Height="Auto" Margin="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" BorderBrush="Transparent" KeyUp="TextBoxEmission_KeyUp"/>
         </GroupBox>
@@ -27,8 +26,29 @@
         <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
             <Button x:Name="buttonEnvoyer" Width="100" Margin="10" Content="Envoyer"/>
             <Button x:Name="buttonClear" Width="100" Margin="10" Content="Clear Console"/>
+            <Button x:Name="buttonTest" Width="100" Margin="10" Content="Test"/>
         </StackPanel>
-       
-        
+        <GroupBox Header="Leds" Margin="5" Grid.Row="2" Grid.Column="0" Width="175" HorizontalAlignment="Left">
+            <StackPanel>
+                <CheckBox Content="Led1"/>
+                <CheckBox Content="Led2" />
+                <CheckBox Content="Led3" />
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Télémètres IR" Margin="5" Grid.Row="2" Grid.Column="0" Width="175" HorizontalAlignment="Right" Height="100">
+            <StackPanel Height="77">
+                <Label x:Name = "IRGauche" Content = "IR Gauche"/>
+                <Label x:Name = "IRCentre" Content = "IR Centre"/>
+                <Label x:Name = "IRDroit" Content = "IR Droit"/>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="Moteurs" Margin="5" Grid.Row="2" Grid.Column="1" Width="175" HorizontalAlignment="Left">
+            <StackPanel>
+                <Label x:Name = "VitesseGauche" Content = "Vitesse Gauche"/>
+                <Label x:Name = "VitesseDroite" Content = "Vitesse Droite" />
+                
+            </StackPanel>
+        </GroupBox>
+
     </Grid>
 </Window>

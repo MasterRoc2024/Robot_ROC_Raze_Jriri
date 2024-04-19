@@ -26,19 +26,40 @@ namespace JririRazeInterface
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+    public enum StateReception
+    {
+        Waiting,
+        FunctionMSB,
+        FunctionLSB,
+        PayloadLengthMSB,
+        PayloadLengthLSB,
+        Payload,
+        CheckSum
+    }
+
     public partial class MainWindow : Window
     {
+        int MOTEUR_GAUCHE= 0;
+        int MOTEUR_DROIT= 1;
         Brush initBrush;
         ExtendedSerialPort serialPort1;
         DispatcherTimer timerAffichage;
         public Robot robot;
-        byte[] byteList; 
+        byte[] byteList;
+
+        StateReception rcvState = StateReception.Waiting;
+        int msgDecodedFunction = 0;
+        int msgDecodedPayloadLength = 0;
+        byte[] msgDecodedPayload;
+        int msgDecodedPayloadIndex = 0;
 
         public MainWindow()
         {
             InitializeComponent();
             initBrush = buttonEnvoyer.Background;
             buttonEnvoyer.Click += ButtonEnvoyer_Click;
+            buttonTest.Click += ButtonTest_Click;
             serialPort1 = new ExtendedSerialPort("COM7", 115200, Parity.None, 8, StopBits.One);
             serialPort1.DataReceived += SerialPort1_DataReceived;
             buttonClear.Click += ButtonClear_Click;
@@ -61,7 +82,7 @@ namespace JririRazeInterface
             while(robot.ByteListReceived.Count > 0)
             {
                 var c = new byte[1] { robot.ByteListReceived.Dequeue() };
-                textBoxReception.Text += Encoding.UTF8.GetString(c, 0, 1);
+                DecodeMessage(c[0]);
                 //textBoxReception.Text += "0x" + c.ToString("X2") + " ";
             }
 
@@ -74,7 +95,6 @@ namespace JririRazeInterface
             {
                 robot.ByteListReceived.Enqueue(value);
             }
-            var t = 1;
         }
 
         //Fonction d'Evenements (Interruptions)
@@ -94,12 +114,29 @@ namespace JririRazeInterface
             serialPort1.Write(byteList, 0, byteList.Length);*/
             //}
             if (serialPort1.IsOpen == true)
+            {
                 //serialPort1.WriteLine(textBoxEmission.Text);
-
                 UartEncodeAndSendMessage(128, textBoxEmission.Text.Length, Encoding.ASCII.GetBytes(textBoxEmission.Text));
+                textBoxEmission.Text = "";
+            }
             else
                 throw new Exception("Envoi de data sur un port ferme");
+        }
 
+        private void ButtonTest_Click(object sender, RoutedEventArgs e)
+        {
+            //Transmission Texte
+            var content = Encoding.ASCII.GetBytes(textBoxEmission.Text);
+            UartEncodeAndSendMessage(0X0080, content.Length, content);
+            //Reglage LED
+            var leds = new byte[2] { (byte)7, 0X01 };
+            UartEncodeAndSendMessage(0X0020, leds.Length, leds);
+            //Reglage TELEMETRE
+
+            //UartEncodeAndSendMessage(0X0020, content.Length, content);
+            //Reglage MOTEURS
+            var moteur = new byte[2] { (byte)MOTEUR_DROIT, (byte)35 };
+            UartEncodeAndSendMessage(0X0020, moteur.Length, moteur);
         }
 
         private void TextBoxEmission_KeyUp(object sender, KeyEventArgs e)
@@ -132,17 +169,121 @@ namespace JririRazeInterface
             return checksum;
         }
 
+        private void DecodeMessage(byte c)
+        {
+            switch (rcvState)
+            {
+                case StateReception.Waiting:
+                    //Etape1
+                    if (c == 0xFE)
+                    {
+                        msgDecodedFunction = 0;
+                        msgDecodedPayloadIndex = 0;
+                        msgDecodedPayloadLength = 0;
+                        rcvState = StateReception.FunctionMSB;
+                    }
+                    break;
+                case StateReception.FunctionMSB:
+                    msgDecodedFunction += c * (int)Math.Pow(2, 8);
+                    //Etape2
+                    rcvState = StateReception.FunctionLSB;
+                    break;
+                case StateReception.FunctionLSB:
+                    //Etape3
+                    msgDecodedFunction += c;
+                    rcvState = StateReception.PayloadLengthMSB;
+                    break;
+                case StateReception.PayloadLengthMSB:
+                    msgDecodedPayloadLength += c * (int)Math.Pow(2, 8);
+                    rcvState = StateReception.PayloadLengthLSB;
+                    break;
+                case StateReception.PayloadLengthLSB:
+                    msgDecodedPayloadLength += c;
+                    msgDecodedPayload = new byte[msgDecodedPayloadLength];
+                    rcvState = StateReception.Payload;
+                    break;
+                case StateReception.Payload:
+                    msgDecodedPayload[msgDecodedPayloadIndex] = c;
+                    msgDecodedPayloadIndex += 1;
+                    if (msgDecodedPayloadIndex >= msgDecodedPayloadLength)
+                    {
+                        rcvState = StateReception.CheckSum;
+                    }
+                    break;
+                case StateReception.CheckSum:
+                    var calculatedChecksum = 0;
+                    calculatedChecksum ^= 0xFE;
+                    calculatedChecksum ^= (byte)(msgDecodedFunction >> 8);
+                    calculatedChecksum ^= (byte)(msgDecodedFunction >> 0);
+                    calculatedChecksum ^= (byte)(msgDecodedPayloadLength >> 8);
+                    calculatedChecksum ^= (byte)(msgDecodedPayloadLength >> 0);
+                    //    msgDecodedPayloadLength;
+                    foreach (var ci in msgDecodedPayload)
+                    {
+                        calculatedChecksum ^= ci;
+                    }
+                    var receivedChecksum = c;
+                    if (calculatedChecksum == receivedChecksum)
+                    {
+                        var cleanPrintPayload= new byte[msgDecodedPayload.Length + 2];
+                        for (var i= 0; i < cleanPrintPayload.Length; i++)
+                        {
+                            if (i == cleanPrintPayload.Length - 2)
+                                //Ajout de CR = déplace le curseur au début de la ligne sans avancer à la ligne suivante
+                                cleanPrintPayload[i] = 0X0D;
+                            else if (i == cleanPrintPayload.Length -1)
+                                //Ajout de LF
+                                cleanPrintPayload[i] = 0X0A;
+                            else
+                                cleanPrintPayload[i] = msgDecodedPayload[i];
+                        }
+                        textBoxReception.Text += Encoding.UTF8.GetString(cleanPrintPayload, 0, cleanPrintPayload.Length);
+                        rcvState = StateReception.Waiting;
+                    }
+                    else
+                    {
+                        rcvState = StateReception.Waiting;
+                        throw new Exception("Il y a eu une perturbation dans la trame");
+                    }
+                        
+                    break;
+                default:
+                    rcvState = StateReception.Waiting;
+                    break;
+            }
+        }
+
+        void ProcessDecodedMessage(int msgFunction,
+                                    int msgPayloadLength, byte[] msgPayload)
+        {
+
+        }
+
         void UartEncodeAndSendMessage(int msgFunction,
             int msgPayloadLength, byte[] msgPayload)
         {
             var checksum = CalculateChecksum(msgFunction,
              msgPayloadLength, msgPayload);
-            int startOfFrame = 0xFE;
-            var debutTrame = new byte[5];
+
+            var array = new byte[msgPayloadLength + 6];
+
+            byte startOfFrame = 0xFE;
+            array[0] = 0xFE;
+            array[1] = (byte)(msgFunction >> 8);
+            array[2] = (byte)(msgFunction >> 0);
+            array[3] = (byte)(msgPayloadLength >> 8);
+            array[4] = (byte)(msgPayloadLength >> 0);
+            for (var i = 0; i< msgPayloadLength; i++)
+            {
+                array[i + 5] = msgPayload[i];
+            }
+            array[array.Length-1] = checksum;
             //var trame = new byte[];
             //serialPort1.Write(byteList, 0, byteList.Length);
-            //serialPort1.Write()
+            serialPort1.Write(array.ToArray(), 0, array.Length);
         }
+
+        
     }
 
 }
