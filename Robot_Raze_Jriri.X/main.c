@@ -19,6 +19,7 @@
 #include "UART.h"
 #include "CB_TX1.h"
 #include "CB_RX1.h"
+#include "UART_Protocol.h"
 /*#define STATE_ATTENTE 0
 #define STATE_ATTENTE_EN_COURS 1
 #define STATE_AVANCE 2
@@ -77,12 +78,18 @@ int main(void) {
     while (1) {
         /*SendMessage((unsigned char*) "Bonjour", 7);
         __delay32(4000000);*/
-        int i;
-        for (i = 0; i < CB_RX1_GetDataSize(); i++) {
+        int i= 0;
+        unsigned char payload[] = {'B', 'o', 'n', 'j', 'o', 'u', 'r'};
+        int t= sizeof(payload);
+        UartEncodeAndSendMessage(128,
+            sizeof(payload), payload);
+        __delay32(40000000);
+        /*for (i = 0; i < CB_RX1_GetDataSize(); i++) {
             unsigned char c = CB_RX1_Get();
-            //SendMessage(&c, 1);
+            SendMessage(&c, 1);
+            
         }
-        __delay32(1000);
+        __delay32(10000);*/
         //SendMessageDirect((unsigned char*) "Bonjour", 7);
         //__delay32(4000000);
 

@@ -20,6 +20,7 @@ using System.Collections;
 using System.Security.Cryptography;
 using System.Drawing;
 using System.Collections.Specialized;
+using System.Security.Policy;
 
 namespace JririRazeInterface
 {
@@ -225,19 +226,7 @@ namespace JririRazeInterface
                     var receivedChecksum = c;
                     if (calculatedChecksum == receivedChecksum)
                     {
-                        var cleanPrintPayload= new byte[msgDecodedPayload.Length + 2];
-                        for (var i= 0; i < cleanPrintPayload.Length; i++)
-                        {
-                            if (i == cleanPrintPayload.Length - 2)
-                                //Ajout de CR = déplace le curseur au début de la ligne sans avancer à la ligne suivante
-                                cleanPrintPayload[i] = 0X0D;
-                            else if (i == cleanPrintPayload.Length -1)
-                                //Ajout de LF
-                                cleanPrintPayload[i] = 0X0A;
-                            else
-                                cleanPrintPayload[i] = msgDecodedPayload[i];
-                        }
-                        textBoxReception.Text += Encoding.UTF8.GetString(cleanPrintPayload, 0, cleanPrintPayload.Length);
+                        ProcessDecodedMessage(msgDecodedFunction, msgDecodedPayloadLength, msgDecodedPayload);
                         rcvState = StateReception.Waiting;
                     }
                     else
@@ -251,12 +240,6 @@ namespace JririRazeInterface
                     rcvState = StateReception.Waiting;
                     break;
             }
-        }
-
-        void ProcessDecodedMessage(int msgFunction,
-                                    int msgPayloadLength, byte[] msgPayload)
-        {
-
         }
 
         void UartEncodeAndSendMessage(int msgFunction,
@@ -283,7 +266,65 @@ namespace JririRazeInterface
             serialPort1.Write(array.ToArray(), 0, array.Length);
         }
 
-        
+        void ProcessDecodedMessage(int msgFunction,
+                                    int msgPayloadLength, byte[] msgPayload)
+        {
+            if (msgFunction == 0x0080)
+            {
+                var cleanPrintPayload = new byte[msgPayloadLength + 2];
+                for (var i = 0; i < cleanPrintPayload.Length; i++)
+                {
+                    if (i == cleanPrintPayload.Length - 2)
+                        //Ajout de CR = déplace le curseur au début de la ligne sans avancer à la ligne suivante
+                        cleanPrintPayload[i] = 0X0D;
+                    else if (i == cleanPrintPayload.Length - 1)
+                        //Ajout de LF
+                        cleanPrintPayload[i] = 0X0A;
+                    else
+                        cleanPrintPayload[i] = msgPayload[i];
+                }
+                textBoxReception.Text += Encoding.UTF8.GetString(cleanPrintPayload, 0, cleanPrintPayload.Length);
+            }
+                
+            //Fonction de Pilotage de Led
+            if (msgFunction == 0x0020)
+            {
+                var numLed = msgPayload[0];
+                var stateLed= msgPayload[1];
+                if (msgPayload[1] == 0x0001)
+                    ((CheckBox)LedPanel.Children[numLed]).IsChecked = true;
+                if (msgPayload[1] == 0x0000)
+                    ((CheckBox)LedPanel.Children[numLed]).IsChecked = false;
+            }
+            //Fonction de réception de position IR
+            if (msgFunction == 0x0030)
+            {
+                var irL = msgPayload[0];
+                var irC= msgPayload[1];
+                var irR= msgPayload[2];
+                UpdateIRDetection(irL, irC, irR);
+            }
+            if(msgFunction == 0x0040)
+            {
+                var consigneL= msgPayload[0];
+                var consigneR= msgPayload[1];
+                UpdateMotors(consigneL, consigneR);
+            }
+        }
+
+        void UpdateIRDetection(double irL, double irC, double irR)
+        {
+            ((Label)IRPanel.Children[0]).Content = "IR Gauche: " + irL;
+            ((Label)IRPanel.Children[1]).Content = "IR Centre: " + irC;
+            ((Label)IRPanel.Children[2]).Content = "IR Droit: " + irR;
+        }
+
+        void UpdateMotors(double mL, double mR)
+        {
+            ((Label)MoteurPanel.Children[0]).Content = "Moteur Gauche: " + mL;
+            ((Label)MoteurPanel.Children[1]).Content = "Moteur Droit: " + mR;
+        }
+
     }
 
 }

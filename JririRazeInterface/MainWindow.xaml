@@ -29,21 +29,21 @@
             <Button x:Name="buttonTest" Width="100" Margin="10" Content="Test"/>
         </StackPanel>
         <GroupBox Header="Leds" Margin="5" Grid.Row="2" Grid.Column="0" Width="175" HorizontalAlignment="Left">
-            <StackPanel>
-                <CheckBox Content="Led1"/>
-                <CheckBox Content="Led2" />
-                <CheckBox Content="Led3" />
+            <StackPanel x:Name="LedPanel">
+                <CheckBox x:Name="L1" Content="Led1"/>
+                <CheckBox x:Name="L2" Content="Led2" />
+                <CheckBox x:Name="L3" Content="Led3" />
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Télémètres IR" Margin="5" Grid.Row="2" Grid.Column="0" Width="175" HorizontalAlignment="Right" Height="100">
-            <StackPanel Height="77">
+            <StackPanel x:Name="IRPanel" Height="77">
                 <Label x:Name = "IRGauche" Content = "IR Gauche"/>
                 <Label x:Name = "IRCentre" Content = "IR Centre"/>
                 <Label x:Name = "IRDroit" Content = "IR Droit"/>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Moteurs" Margin="5" Grid.Row="2" Grid.Column="1" Width="175" HorizontalAlignment="Left">
-            <StackPanel>
+            <StackPanel x:Name="MoteurPanel">
                 <Label x:Name = "VitesseGauche" Content = "Vitesse Gauche"/>
                 <Label x:Name = "VitesseDroite" Content = "Vitesse Droite" />
                 
