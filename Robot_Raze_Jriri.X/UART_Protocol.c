@@ -1,6 +1,16 @@
 #include <xc.h>
 #include "UART_Protocol.h"
 #include "UART.h"
+#include "math.h"
+#include "IO.h"
+#include "PWM.h"
+#define Waiting 0
+#define FunctionMSB 1
+#define FunctionLSB 2
+#define PayloadLengthMSB 3
+#define PayloadLengthLSB 4
+#define Payload 5
+#define CheckSum 6
 
 unsigned char UartCalculateChecksum(int msgFunction,
         int msgPayloadLength, unsigned char* msgPayload) {
@@ -43,18 +53,99 @@ int msgDecodedFunction = 0;
 int msgDecodedPayloadLength = 0;
 unsigned char msgDecodedPayload[128];
 int msgDecodedPayloadIndex = 0;
+int rcvState= Waiting;
+unsigned char calculatedChecksum= 0;
 
-/*void UartDecodeMessage(unsigned char c) {
+void UartDecodeMessage(unsigned char c) {
     //Fonction prenant en entree un octet et servant a reconstituer les trames
-    ...
+    switch (rcvState)
+{
+    case Waiting:
+        //Etape1
+        if (c == 0xFE)
+        {
+            msgDecodedFunction = 0;
+            msgDecodedPayloadIndex = 0;
+            msgDecodedPayloadLength = 0;
+            rcvState = FunctionMSB;
+        }
+        break;
+    case FunctionMSB:
+        msgDecodedFunction += c * (int)pow(2,8);
+        //Etape2
+        rcvState = FunctionLSB;
+        break;
+    case FunctionLSB:
+        //Etape3
+        msgDecodedFunction += c;
+        rcvState = PayloadLengthMSB;
+        break;
+    case PayloadLengthMSB:
+        msgDecodedPayloadLength += c * (int)pow(2, 8);
+        rcvState = PayloadLengthLSB;
+        break;
+    case PayloadLengthLSB:
+        msgDecodedPayloadLength += c;
+        rcvState = Payload;
+        break;
+    case Payload:
+        msgDecodedPayload[msgDecodedPayloadIndex] = c;
+        msgDecodedPayloadIndex += 1;
+        if (msgDecodedPayloadIndex >= msgDecodedPayloadLength)
+        {
+            rcvState = CheckSum;
+        }
+        break;
+    case CheckSum:
+        calculatedChecksum = 0;
+        calculatedChecksum ^= 0xFE;
+        calculatedChecksum ^= (msgDecodedFunction >> 8);
+        calculatedChecksum ^= (msgDecodedFunction >> 0);
+        calculatedChecksum ^= (msgDecodedPayloadLength >> 8);
+        calculatedChecksum ^= (msgDecodedPayloadLength >> 0);
+        //    msgDecodedPayloadLength;
+        for(int i= 0; i < sizeof(msgDecodedPayload); i++)
+        {
+            calculatedChecksum ^= msgDecodedPayload[i];
+        }
+        unsigned char receivedChecksum = c;
+        if (calculatedChecksum == receivedChecksum)
+        {
+            UartProcessDecodedMessage(msgDecodedFunction, msgDecodedPayloadLength, msgDecodedPayload);
+            rcvState = Waiting;
+        }
+        else
+        {
+            rcvState = Waiting;
+        }
+            
+        break;
+    default:
+        rcvState = Waiting;
+        break;
+}
 }
 
 void UartProcessDecodedMessage(int function,
         int payloadLength, unsigned char* payload) {
     //Fonction appelee apres le decodage pour executer l?action
     //correspondant au message recu
-    ...
-}*/
+    if((unsigned char)function == 0x0020) {
+        unsigned ledID= payload[0];
+        if (payload[0] == 0x0000) {
+            LED_BLANCHE = payload[1];
+        }
+        if (payload[0] == 0x0001) {
+            LED_BLEUE = payload[1];
+        }
+        if (payload[0] == 0x0002) {
+            LED_ORANGE = payload[1];
+        }
+    }
+    if ((unsigned char)function == 0x0040) {
+        PWMSetSpeedConsigne((float)payload[0],(float)payload[1] );
+    }
+}
 //*************************************************************************/
 //Fonctions correspondant aux messages
 //*************************************************************************/

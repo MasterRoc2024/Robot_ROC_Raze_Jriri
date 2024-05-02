@@ -63,3 +63,50 @@ void PWMSetSpeed(float vitessePourcents, int motor) {
         }
     }
 }
+
+void PWMSetSpeedConsigne(float vitesseMGConsigne, float vitesseMDConsigne) {//pour donner une vitesse de consigne au robot 
+    robotState.vitesseGaucheConsigne = vitesseMGConsigne;
+    robotState.vitesseDroiteConsigne = vitesseMGConsigne;
+}
+
+void PWMUpdateSpeed()//generateur de rampe 
+{
+    // Cette fonction est ?appele sur timer et permet de suivre des rampes d???acclration
+    if (robotState.vitesseDroiteCommandeCourante < robotState.vitesseDroiteConsigne) { //Le robot doit accelerer jusqu'a atteindre la vitesse consigne 
+        robotState.vitesseDroiteCommandeCourante = Min(robotState.vitesseDroiteCommandeCourante + acceleration,
+                robotState.vitesseDroiteConsigne); // pour rester dans l'intervalle rt ne pas depaser la vitesse consigne
+    }
+    if (robotState.vitesseDroiteCommandeCourante > robotState.vitesseDroiteConsigne) { //il faut ralentir pour retrouver sa vitesse de consigne 
+        robotState.vitesseDroiteCommandeCourante = Max(robotState.vitesseDroiteCommandeCourante - acceleration,
+                robotState.vitesseDroiteConsigne); //c'est pour ne jamais depasser la vitesse consigne 
+    }
+    if (robotState.vitesseDroiteCommandeCourante > 0) {
+        MOTEUR_DROIT_L_PWM_ENABLE = 0; //pilotage de la pin en mode IO
+        MOTEUR_DROIT_L_IO_OUTPUT = 1; //Mise ?1 de la pin
+        MOTEUR_DROIT_H_PWM_ENABLE = 1; //Pilotage de la pin en mode PWM
+    } else {
+        MOTEUR_DROIT_H_PWM_ENABLE = 0; //pilotage de la pin en mode IO
+        MOTEUR_DROIT_H_IO_OUTPUT = 1; //Mise ?1 de la pin
+        MOTEUR_DROIT_L_PWM_ENABLE = 1; //Pilotage de la pin en mode PWM
+    }
+    MOTEUR_DROIT_DUTY_CYCLE = Abs(robotState.vitesseDroiteCommandeCourante) * PWMPER;
+    if (robotState.vitesseGaucheCommandeCourante < robotState.vitesseGaucheConsigne) {
+        robotState.vitesseGaucheCommandeCourante = Min(robotState.vitesseGaucheCommandeCourante + acceleration,
+                robotState.vitesseGaucheConsigne);
+    }
+    if (robotState.vitesseGaucheCommandeCourante > robotState.vitesseGaucheConsigne) {
+        robotState.vitesseGaucheCommandeCourante = Max(robotState.vitesseGaucheCommandeCourante - acceleration,
+                robotState.vitesseGaucheConsigne);
+    }
+    
+    if (robotState.vitesseGaucheCommandeCourante > 0) {
+        MOTEUR_GAUCHE_L_PWM_ENABLE = 0; //pilotage de la pin en mode IO
+        MOTEUR_GAUCHE_L_IO_OUTPUT = 1; //Mise ?1 de la pin
+        MOTEUR_GAUCHE_H_PWM_ENABLE = 1; //Pilotage de la pin en mode PWM
+    } else {
+        MOTEUR_GAUCHE_H_PWM_ENABLE = 0; //pilotage de la pin en mode IO
+        MOTEUR_GAUCHE_H_IO_OUTPUT = 1; //Mise ?1 de la pin
+        MOTEUR_GAUCHE_L_PWM_ENABLE = 1; //Pilotage de la pin en mode PWM
+    }
+    MOTEUR_GAUCHE_DUTY_CYCLE = Abs(robotState.vitesseGaucheCommandeCourante) * PWMPER;
+}

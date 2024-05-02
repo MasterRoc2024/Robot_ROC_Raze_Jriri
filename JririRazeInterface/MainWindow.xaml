@@ -30,9 +30,9 @@
         </StackPanel>
         <GroupBox Header="Leds" Margin="5" Grid.Row="2" Grid.Column="0" Width="175" HorizontalAlignment="Left">
             <StackPanel x:Name="LedPanel">
-                <CheckBox x:Name="L1" Content="Led1"/>
-                <CheckBox x:Name="L2" Content="Led2" />
-                <CheckBox x:Name="L3" Content="Led3" />
+                <CheckBox x:Name="L1" Content="Led Blanche"/>
+                <CheckBox x:Name="L2" Content="Led Bleue" />
+                <CheckBox x:Name="L3" Content="Led Orange" />
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Télémètres IR" Margin="5" Grid.Row="2" Grid.Column="0" Width="175" HorizontalAlignment="Right" Height="100">
@@ -46,7 +46,6 @@
             <StackPanel x:Name="MoteurPanel">
                 <Label x:Name = "VitesseGauche" Content = "Vitesse Gauche"/>
                 <Label x:Name = "VitesseDroite" Content = "Vitesse Droite" />
-                
             </StackPanel>
         </GroupBox>
 

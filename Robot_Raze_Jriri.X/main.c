@@ -67,23 +67,23 @@ int main(void) {
     InitPWM();
     InitADC1();
     InitUART();
-    PWMSetSpeed(10, MOTEUR_DROIT);
-    PWMSetSpeed(10, MOTEUR_GAUCHE);
-    LED_BLANCHE = 1;
-    LED_BLEUE = 1;
-    LED_ORANGE = 1;
+    /*PWMSetSpeed(10, MOTEUR_DROIT);
+    PWMSetSpeed(10, MOTEUR_GAUCHE);*/
+    LED_BLANCHE = 0;
+    LED_BLEUE = 0;
+    LED_ORANGE = 0;
     /****************************************************************************************************/
     // Boucle Principale
     /****************************************************************************************************/
     while (1) {
         /*SendMessage((unsigned char*) "Bonjour", 7);
         __delay32(4000000);*/
-        int i= 0;
+        /*int i= 0;
         unsigned char payload[] = {'B', 'o', 'n', 'j', 'o', 'u', 'r'};
         int t= sizeof(payload);
         UartEncodeAndSendMessage(128,
             sizeof(payload), payload);
-        __delay32(40000000);
+        __delay32(40000000);*/
         /*for (i = 0; i < CB_RX1_GetDataSize(); i++) {
             unsigned char c = CB_RX1_Get();
             SendMessage(&c, 1);
@@ -96,8 +96,12 @@ int main(void) {
         //LED_BLANCHE = !LED_BLANCHE;
         //LED_BLEUE = !LED_BLEUE;
         //LED_ORANGE = !LED_ORANGE;
-
-        /*if (ADCIsConversionFinished() == 1) {           //Si une nouvelle aquisition terminée || Récupération des résultats
+        for (int i = 0; i < CB_RX1_GetDataSize(); i++) {
+            unsigned char c = CB_RX1_Get();
+            UartDecodeMessage(c);
+        }
+        
+        if (ADCIsConversionFinished() == 1) {           //Si une nouvelle aquisition terminée || Récupération des résultats
             unsigned int * result=  ADCGetResult();
             unsigned int ADCValue0= result[0];
             float volts = ((float) ADCValue0)* 3.3 / 4096 * 3.2;
@@ -110,8 +114,27 @@ int main(void) {
             robotState.distanceTelemetreDroit = 34 / volts - 5;
             //Flag à 0 pour détecter la fin de l'aquisition suivante
             ADCClearConversionFinishedFlag();
-            
-        }*/
+            //Envoi de trames pour les IR
+            unsigned char payloadIR[] = {robotState.distanceTelemetreGauche, robotState.distanceTelemetreCentre, robotState.distanceTelemetreDroit};
+            UartEncodeAndSendMessage(0x0030,
+            sizeof(payloadIR), payloadIR);
+            //Envoi de trames pour les états des Leds
+            unsigned char payloadLed[2]= {0, LED_BLANCHE};
+            UartEncodeAndSendMessage(0x0020,
+            sizeof(payloadLed), payloadLed);
+            payloadLed[0]= 1;
+            payloadLed[1]= LED_BLEUE;
+            UartEncodeAndSendMessage(0x0020,
+            sizeof(payloadLed), payloadLed);
+            payloadLed[0]= 2;
+            payloadLed[1]= LED_ORANGE;
+            UartEncodeAndSendMessage(0x0020,
+            sizeof(payloadLed), payloadLed);
+            //Envoi de trame pour les Vitesses courantes des moteurs
+            unsigned char payloadMotors[2]= {robotState.vitesseGaucheCommandeCourante, robotState.vitesseDroiteCommandeCourante};
+            UartEncodeAndSendMessage(0x0040,
+            sizeof(payloadMotors), payloadMotors);
+        }
     } // fin main
 
 }

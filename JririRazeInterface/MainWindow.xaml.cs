@@ -71,6 +71,26 @@ namespace JririRazeInterface
             timerAffichage.Start();
             robot = new Robot();
             byteList = new byte[20];
+            foreach(var checkBox in LedPanel.Children)
+            {
+                ((CheckBox)checkBox).Click += CheckBox_Click;
+            }
+            
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            var checkBox = (CheckBox)e.Source;
+            var ledID = 0;
+            if(checkBox.Content.Equals("Led Blanche"))
+                ledID = 0;
+            if (checkBox.Content.Equals("Led Bleue"))
+                ledID = 1;
+            if (checkBox.Content.Equals("Led Orange"))
+                ledID = 2;
+            byte[] payloadLed = new byte[2] { (byte)ledID, (byte)Convert.ToInt32((bool)checkBox.IsChecked) };
+            UartEncodeAndSendMessage(0x0020,
+            payloadLed.Length, payloadLed);
         }
 
         private void ButtonClear_Click(object sender, RoutedEventArgs e)
@@ -127,17 +147,17 @@ namespace JririRazeInterface
         private void ButtonTest_Click(object sender, RoutedEventArgs e)
         {
             //Transmission Texte
-            var content = Encoding.ASCII.GetBytes(textBoxEmission.Text);
+            /*var content = Encoding.ASCII.GetBytes(textBoxEmission.Text);
             UartEncodeAndSendMessage(0X0080, content.Length, content);
             //Reglage LED
             var leds = new byte[2] { (byte)7, 0X01 };
-            UartEncodeAndSendMessage(0X0020, leds.Length, leds);
+            UartEncodeAndSendMessage(0X0020, leds.Length, leds);*/
             //Reglage TELEMETRE
 
             //UartEncodeAndSendMessage(0X0020, content.Length, content);
             //Reglage MOTEURS
-            var moteur = new byte[2] { (byte)MOTEUR_DROIT, (byte)35 };
-            UartEncodeAndSendMessage(0X0020, moteur.Length, moteur);
+            var moteur = new byte[2] { (byte)30, (byte)30 };
+            UartEncodeAndSendMessage(0X0040, moteur.Length, moteur);
         }
 
         private void TextBoxEmission_KeyUp(object sender, KeyEventArgs e)
@@ -232,7 +252,7 @@ namespace JririRazeInterface
                     else
                     {
                         rcvState = StateReception.Waiting;
-                        throw new Exception("Il y a eu une perturbation dans la trame");
+                        Console.WriteLine("Il y a eu une perturbation dans la trame");
                     }
                         
                     break;
@@ -287,7 +307,7 @@ namespace JririRazeInterface
             }
                 
             //Fonction de Pilotage de Led
-            if (msgFunction == 0x0020)
+            else if (msgFunction == 0x0020)
             {
                 var numLed = msgPayload[0];
                 var stateLed= msgPayload[1];
@@ -297,14 +317,14 @@ namespace JririRazeInterface
                     ((CheckBox)LedPanel.Children[numLed]).IsChecked = false;
             }
             //Fonction de réception de position IR
-            if (msgFunction == 0x0030)
+            else if (msgFunction == 0x0030)
             {
                 var irL = msgPayload[0];
                 var irC= msgPayload[1];
                 var irR= msgPayload[2];
                 UpdateIRDetection(irL, irC, irR);
             }
-            if(msgFunction == 0x0040)
+            else if(msgFunction == 0x0040)
             {
                 var consigneL= msgPayload[0];
                 var consigneR= msgPayload[1];
@@ -314,15 +334,22 @@ namespace JririRazeInterface
 
         void UpdateIRDetection(double irL, double irC, double irR)
         {
-            ((Label)IRPanel.Children[0]).Content = "IR Gauche: " + irL;
-            ((Label)IRPanel.Children[1]).Content = "IR Centre: " + irC;
-            ((Label)IRPanel.Children[2]).Content = "IR Droit: " + irR;
+            Dispatcher.BeginInvoke(new Action(delegate () {
+                ((Label)IRPanel.Children[0]).Content = "IR Gauche: " + irL;
+                ((Label)IRPanel.Children[1]).Content = "IR Centre: " + irC;
+                ((Label)IRPanel.Children[2]).Content = "IR Droit: " + irR;
+            }));
+
+            
         }
 
         void UpdateMotors(double mL, double mR)
         {
-            ((Label)MoteurPanel.Children[0]).Content = "Moteur Gauche: " + mL;
-            ((Label)MoteurPanel.Children[1]).Content = "Moteur Droit: " + mR;
+            Dispatcher.BeginInvoke(new Action(delegate () {
+                ((Label)MoteurPanel.Children[0]).Content = "Moteur Gauche: " + mL;
+                ((Label)MoteurPanel.Children[1]).Content = "Moteur Droit: " + mR;
+            }));
+            
         }
 
     }
