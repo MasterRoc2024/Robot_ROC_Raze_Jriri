@@ -21,6 +21,7 @@ using System.Security.Cryptography;
 using System.Drawing;
 using System.Collections.Specialized;
 using System.Security.Policy;
+using KeyboardHook_NS;
 
 namespace JririRazeInterface
 {
@@ -28,6 +29,26 @@ namespace JririRazeInterface
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     /// 
+    public enum StateRobot
+    {
+        STATE_ATTENTE = 0,
+        STATE_ATTENTE_EN_COURS = 1,
+        STATE_AVANCE = 2,
+        STATE_AVANCE_EN_COURS = 3,
+        STATE_TOURNE_GAUCHE = 4,
+        STATE_TOURNE_GAUCHE_EN_COURS = 5,
+        STATE_TOURNE_DROITE = 6,
+        STATE_TOURNE_DROITE_EN_COURS = 7,
+        STATE_TOURNE_SUR_PLACE_GAUCHE = 8,
+        STATE_TOURNE_SUR_PLACE_GAUCHE_EN_COURS = 9,
+        STATE_TOURNE_SUR_PLACE_DROITE = 10,
+        STATE_TOURNE_SUR_PLACE_DROITE_EN_COURS = 11,
+        STATE_ARRET = 12,
+        STATE_ARRET_EN_COURS = 13,
+        STATE_RECULE = 14,
+        STATE_RECULE_EN_COURS = 15
+    }
+
     public enum StateReception
     {
         Waiting,
@@ -48,6 +69,7 @@ namespace JririRazeInterface
         DispatcherTimer timerAffichage;
         public Robot robot;
         byte[] byteList;
+        GlobalKeyboardHook KeyboardHook= new GlobalKeyboardHook();
 
         StateReception rcvState = StateReception.Waiting;
         int msgDecodedFunction = 0;
@@ -75,7 +97,52 @@ namespace JririRazeInterface
             {
                 ((CheckBox)checkBox).Click += CheckBox_Click;
             }
-            
+            ControlRobot.Click += ControlRobot_Click;
+            KeyboardHook.KeyPressed += KeyboardHook_KeyPressed;
+
+
+        }
+
+        private void KeyboardHook_KeyPressed(object? sender, KeyArgs e)
+        {
+            switch(e.keyCode)
+            {
+                case KeyCode.LEFT:
+                    UartEncodeAndSendMessage(0x0051, 1, 
+                                                new byte[] { (byte)StateRobot.STATE_TOURNE_SUR_PLACE_GAUCHE });
+                            break;
+                case KeyCode.RIGHT:
+                                UartEncodeAndSendMessage(0x0051, 1, new byte[] {
+                (byte)StateRobot.STATE_TOURNE_SUR_PLACE_DROITE });
+                break;
+            case KeyCode.UP:
+                UartEncodeAndSendMessage(0x0051, 1, new byte[]
+                { (byte)StateRobot.STATE_AVANCE });
+                break;
+            case KeyCode.DOWN:
+                UartEncodeAndSendMessage(0x0051, 1, new byte[]
+                { (byte)StateRobot.STATE_ARRET });
+                break;
+            case KeyCode.PAGEDOWN:
+                UartEncodeAndSendMessage(0x0051, 1, new byte[]
+                { (byte)StateRobot.STATE_RECULE });
+                break;
+
+            }
+        }
+
+        private void ControlRobot_Click(object sender, RoutedEventArgs e)
+        {
+            if (((CheckBox)e.Source).IsChecked == true)
+            {
+                UartEncodeAndSendMessage(0x0052, 1, new byte[]
+                { 0 });
+            }
+            else
+            {
+                UartEncodeAndSendMessage(0x0052, 1, new byte[]
+                { 1 });
+            }
         }
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)

@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JririRazeInterface", "Jriri
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtendedSerialPort", "..\ExtendedSerialPort .NET6\ExtendedSerialPort\ExtendedSerialPort\ExtendedSerialPort.csproj", "{2127979F-4E92-4177-A40D-4D1A3D87E9C6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeyboardHook", "..\KeyboardHook\KeyboardHook.csproj", "{35757330-EF98-4341-A48F-FB8F582CE41B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2127979F-4E92-4177-A40D-4D1A3D87E9C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2127979F-4E92-4177-A40D-4D1A3D87E9C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2127979F-4E92-4177-A40D-4D1A3D87E9C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35757330-EF98-4341-A48F-FB8F582CE41B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35757330-EF98-4341-A48F-FB8F582CE41B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35757330-EF98-4341-A48F-FB8F582CE41B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35757330-EF98-4341-A48F-FB8F582CE41B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

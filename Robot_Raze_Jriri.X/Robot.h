@@ -18,6 +18,9 @@ typedef struct robotStateBITS {
             float distanceTelemetreGauche;
             float distanceTelemetreCentre;
             float distanceTelemetreDroit;
+            unsigned char stateRobot;
+            unsigned char nextStateRobot;
+            int autoControlActivated;
         };
     };
 } ROBOT_STATE_BITS;

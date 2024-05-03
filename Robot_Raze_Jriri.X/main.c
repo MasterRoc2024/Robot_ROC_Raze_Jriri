@@ -20,7 +20,7 @@
 #include "CB_TX1.h"
 #include "CB_RX1.h"
 #include "UART_Protocol.h"
-/*#define STATE_ATTENTE 0
+#define STATE_ATTENTE 0
 #define STATE_ATTENTE_EN_COURS 1
 #define STATE_AVANCE 2
 #define STATE_AVANCE_EN_COURS 3
@@ -40,20 +40,20 @@
 #define PAS_D_OBSTACLE 0
 #define OBSTACLE_A_GAUCHE 1
 #define OBSTACLE_A_DROITE 2
-#define OBSTACLE_EN_FACE 3*/
+#define OBSTACLE_EN_FACE 3
 
 #define MOTEUR_GAUCHE 0
 #define MOTEUR_DROIT 1
 
-unsigned char stateRobot;
-unsigned char nextStateRobot = 0;
 int processReceiveData= 0;
+    
 
 int main(void) {
     /***************************************************************************************************/
     //Initialisation de l?oscillateur
     /****************************************************************************************************/
-
+    robotState.nextStateRobot= 0;
+    robotState.autoControlActivated = 1;
     InitOscillator();
 
     /****************************************************************************************************/
@@ -136,7 +136,120 @@ int main(void) {
             sizeof(payloadMotors), payloadMotors);
         }
     } // fin main
+}
 
+void OperatingSystemLoop(void) {
+    switch (robotState.stateRobot) {
+        case STATE_ATTENTE:
+            timestamp = 0;
+            /*PWMSetSpeedConsigne(0, MOTEUR_DROIT);
+            PWMSetSpeedConsigne(0, MOTEUR_GAUCHE);*/
+            PWMSetSpeedConsigne(0, 0);
+            robotState.stateRobot = STATE_ATTENTE_EN_COURS;
+
+        case STATE_ATTENTE_EN_COURS:
+            if (timestamp > 1000)
+                robotState.stateRobot = STATE_AVANCE;
+            break;
+
+        case STATE_AVANCE:
+            /*PWMSetSpeedConsigne(30, MOTEUR_DROIT);
+            PWMSetSpeedConsigne(30, MOTEUR_GAUCHE);*/
+            PWMSetSpeedConsigne(30, 30);
+            robotState.stateRobot = STATE_AVANCE_EN_COURS;
+            break;
+        case STATE_AVANCE_EN_COURS:
+            if (robotState.autoControlActivated == 1) {
+                SetNextRobotStateInAutomaticMode();
+            }
+            
+            break;
+
+        case STATE_TOURNE_GAUCHE:
+            /*PWMSetSpeedConsigne(30, MOTEUR_DROIT);
+            PWMSetSpeedConsigne(0, MOTEUR_GAUCHE);*/
+            PWMSetSpeedConsigne(0, 30);
+            robotState.stateRobot = STATE_TOURNE_GAUCHE_EN_COURS;
+            break;
+        case STATE_TOURNE_GAUCHE_EN_COURS:
+            if (robotState.autoControlActivated == 1) {
+                SetNextRobotStateInAutomaticMode();
+            }
+            break;
+
+        case STATE_TOURNE_DROITE:
+            /*PWMSetSpeedConsigne(0, MOTEUR_DROIT);
+            PWMSetSpeedConsigne(30, MOTEUR_GAUCHE);*/
+            PWMSetSpeedConsigne(30, 0);
+            robotState.stateRobot = STATE_TOURNE_DROITE_EN_COURS;
+            break;
+        case STATE_TOURNE_DROITE_EN_COURS:
+            if (robotState.autoControlActivated == 1) {
+                SetNextRobotStateInAutomaticMode();
+            }
+            break;
+
+        case STATE_TOURNE_SUR_PLACE_GAUCHE:
+            /*PWMSetSpeedConsigne(15, MOTEUR_DROIT);
+            PWMSetSpeedConsigne(-15, MOTEUR_GAUCHE);*/
+            PWMSetSpeedConsigne(-15, 15);
+            robotState.stateRobot = STATE_TOURNE_SUR_PLACE_GAUCHE_EN_COURS;
+            break;
+        case STATE_TOURNE_SUR_PLACE_GAUCHE_EN_COURS:
+            if (robotState.autoControlActivated == 1) {
+                SetNextRobotStateInAutomaticMode();
+            }
+            break;
+
+        case STATE_TOURNE_SUR_PLACE_DROITE:
+            /*PWMSetSpeedConsigne(-15, MOTEUR_DROIT);
+            PWMSetSpeedConsigne(15, MOTEUR_GAUCHE);*/
+            PWMSetSpeedConsigne(15, -15);
+            robotState.stateRobot = STATE_TOURNE_SUR_PLACE_DROITE_EN_COURS;
+            break;
+        case STATE_TOURNE_SUR_PLACE_DROITE_EN_COURS:
+            if (robotState.autoControlActivated == 1) {
+                SetNextRobotStateInAutomaticMode();
+            }
+            break;
+
+        default:
+            robotState.stateRobot = STATE_ATTENTE;
+            break;
+    }
+}
+void SetNextRobotStateInAutomaticMode() {
+    unsigned char positionObstacle = PAS_D_OBSTACLE;
+
+        //D?termination de la position des obstacles en fonction des t?l?m?tres
+        if (robotState.distanceTelemetreDroit < 30 &&
+                robotState.distanceTelemetreCentre > 20 &&
+                robotState.distanceTelemetreGauche > 30) //Obstacle ? droite
+            positionObstacle = OBSTACLE_A_DROITE;
+        else if (robotState.distanceTelemetreDroit > 30 &&
+                robotState.distanceTelemetreCentre > 20 &&
+                robotState.distanceTelemetreGauche < 30) //Obstacle ? gauche
+            positionObstacle = OBSTACLE_A_GAUCHE;
+        else if (robotState.distanceTelemetreCentre < 20) //Obstacle en face
+            positionObstacle = OBSTACLE_EN_FACE;
+        else if (robotState.distanceTelemetreDroit > 30 &&
+                robotState.distanceTelemetreCentre > 20 &&
+                robotState.distanceTelemetreGauche > 30) //pas d?obstacle
+            positionObstacle = PAS_D_OBSTACLE;
+
+        //D?termination de l??tat ? venir du robot
+        if (positionObstacle == PAS_D_OBSTACLE)
+            robotState.nextStateRobot = STATE_AVANCE;
+        else if (positionObstacle == OBSTACLE_A_DROITE)
+            robotState.nextStateRobot = STATE_TOURNE_GAUCHE;
+        else if (positionObstacle == OBSTACLE_A_GAUCHE)
+            robotState.nextStateRobot = STATE_TOURNE_DROITE;
+        else if (positionObstacle == OBSTACLE_EN_FACE)
+            robotState.nextStateRobot = STATE_TOURNE_SUR_PLACE_GAUCHE;
+
+        //Si l'on n?est pas dans la transition de l??tape en cours (exemple: eviter de repasser par STATE_AVANCE  quand on est d?j? ? dans STATE_AVANCE_EN_COURS)
+        if (robotState.nextStateRobot !=robotState.stateRobot - 1)
+            robotState.stateRobot = robotState.nextStateRobot;
 }
 
 

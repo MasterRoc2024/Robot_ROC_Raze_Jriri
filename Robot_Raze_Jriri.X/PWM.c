@@ -32,14 +32,12 @@ void PWMSetSpeed(float vitessePourcents, int motor) {
     if (motor == MOTEUR_GAUCHE) {
         if (vitessePourcents > 0) {
             robotState.vitesseGaucheCommandeCourante = vitessePourcents;
-            float t= Abs(robotState.vitesseGaucheCommandeCourante * PWMPER);
             MOTEUR_GAUCHE_L_PWM_ENABLE = 0; //Pilotage de la pin en mode IO
             MOTEUR_GAUCHE_L_IO_OUTPUT = 1; //Mise à1 de la pin
             MOTEUR_GAUCHE_H_PWM_ENABLE = 1; //Pilotage de la pin en mode PWM
             MOTEUR_GAUCHE_DUTY_CYCLE = Abs(robotState.vitesseGaucheCommandeCourante * PWMPER);
         } else {
             robotState.vitesseGaucheCommandeCourante = vitessePourcents;
-            float t= Abs(robotState.vitesseDroiteCommandeCourante * PWMPER);
             MOTEUR_GAUCHE_H_PWM_ENABLE = 0; //Pilotage de la pin en mode IO
             MOTEUR_GAUCHE_H_IO_OUTPUT = 1; //Mise à1 de la pin
             MOTEUR_GAUCHE_L_PWM_ENABLE = 1; //Pilotage de la pin en mode PWM
@@ -48,14 +46,12 @@ void PWMSetSpeed(float vitessePourcents, int motor) {
     } else {
         if (vitessePourcents > 0) {
             robotState.vitesseDroiteCommandeCourante = vitessePourcents;
-            float t= Abs(robotState.vitesseDroiteCommandeCourante * PWMPER);
             MOTEUR_DROIT_L_PWM_ENABLE = 0; //Pilotage de la pin en mode IO
             MOTEUR_DROIT_L_IO_OUTPUT = 1; //Mise à1 de la pin
             MOTEUR_DROIT_H_PWM_ENABLE = 1; //Pilotage de la pin en mode PWM
             MOTEUR_DROIT_DUTY_CYCLE = Abs(robotState.vitesseDroiteCommandeCourante * PWMPER);
         } else {
             robotState.vitesseDroiteCommandeCourante = vitessePourcents;
-            float t= Abs(robotState.vitesseDroiteCommandeCourante * PWMPER);
             MOTEUR_DROIT_H_PWM_ENABLE = 0; //Pilotage de la pin en mode IO
             MOTEUR_DROIT_H_IO_OUTPUT = 1; //Mise à1 de la pin
             MOTEUR_DROIT_L_PWM_ENABLE = 1; //Pilotage de la pin en mode PWM
@@ -66,7 +62,8 @@ void PWMSetSpeed(float vitessePourcents, int motor) {
 
 void PWMSetSpeedConsigne(float vitesseMGConsigne, float vitesseMDConsigne) {//pour donner une vitesse de consigne au robot 
     robotState.vitesseGaucheConsigne = vitesseMGConsigne;
-    robotState.vitesseDroiteConsigne = vitesseMGConsigne;
+    robotState.vitesseDroiteConsigne = vitesseMDConsigne;
+    int t= 1;
 }
 
 void PWMUpdateSpeed()//generateur de rampe 

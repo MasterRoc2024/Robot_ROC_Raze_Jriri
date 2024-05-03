@@ -48,6 +48,11 @@
                 <Label x:Name = "VitesseDroite" Content = "Vitesse Droite" />
             </StackPanel>
         </GroupBox>
+        <GroupBox Header="Controle Robot" Margin="5" Grid.Row="2" Grid.Column="1" Width="175" HorizontalAlignment="Right">
+            <StackPanel x:Name="RobotPanel">
+                <CheckBox x:Name="ControlRobot" Content="Controle Robot Clavier"/>
+            </StackPanel>
+        </GroupBox>
 
     </Grid>
 </Window>

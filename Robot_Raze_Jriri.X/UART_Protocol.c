@@ -4,6 +4,7 @@
 #include "math.h"
 #include "IO.h"
 #include "PWM.h"
+#include "Robot.h"
 #define Waiting 0
 #define FunctionMSB 1
 #define FunctionLSB 2
@@ -11,6 +12,7 @@
 #define PayloadLengthLSB 4
 #define Payload 5
 #define CheckSum 6
+#define SET_ROBOT_STATE 0x0051
 
 unsigned char UartCalculateChecksum(int msgFunction,
         int msgPayloadLength, unsigned char* msgPayload) {
@@ -130,20 +132,29 @@ void UartProcessDecodedMessage(int function,
         int payloadLength, unsigned char* payload) {
     //Fonction appelee apres le decodage pour executer l?action
     //correspondant au message recu
-    if((unsigned char)function == 0x0020) {
-        unsigned ledID= payload[0];
-        if (payload[0] == 0x0000) {
-            LED_BLANCHE = payload[1];
-        }
-        if (payload[0] == 0x0001) {
-            LED_BLEUE = payload[1];
-        }
-        if (payload[0] == 0x0002) {
-            LED_ORANGE = payload[1];
-        }
-    }
-    if ((unsigned char)function == 0x0040) {
-        PWMSetSpeedConsigne((float)payload[0],(float)payload[1] );
+    switch((unsigned char)function) {
+        case LED_FUNCTION:
+            if (payload[0] == 0x0000) {
+                LED_BLANCHE = payload[1];
+            }
+            if (payload[0] == 0x0001) {
+                LED_BLEUE = payload[1];
+            }
+            if (payload[0] == 0x0002) {
+                LED_ORANGE = payload[1];
+            }
+            break;
+        case CONSIGNE_FUNCTION:
+            PWMSetSpeedConsigne((float)payload[0],(float)payload[1] );
+            break;
+        case SET_ROBOT_STATE:
+            robotState.stateRobot= payload[0];
+            break;
+        case SET_ROBOT_MANUAL_CONTROL:
+            robotState.autoControlActivated = payload[0];
+            break;
+        default:
+            break;
     }
 }
 //*************************************************************************/
